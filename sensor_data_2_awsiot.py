@@ -70,6 +70,8 @@ humidity = sense.get_humidity()
 temp = round(temp, 1)
 humidity = round(humidity, 1)
 
+#get current time
+currenttime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
 # Display humidity and temp readings
 print("Moisture Level: {}".format(humidity))
 print("Temperature: {}".format(temp))
@@ -87,7 +89,8 @@ print(orientation)
  
 JSONPayload = { "state": 
     { "reported":
-        { "temperature":str(temp), 
+        { "time":str(currenttime),
+          "temperature":str(temp), 
           "humidity":str(humidity),
           "level":level_str
         } 
