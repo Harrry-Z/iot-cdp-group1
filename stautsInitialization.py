@@ -1,5 +1,6 @@
-# 文件 ledController.py 充当Led 灯的控制器，
-# 它定期向Led 发出『开』或『关』的指令，并定期获取其状态
+#Group 1  Xikang Zhang, Yajie Zhang, Yacong Wang
+# system initialization
+# set the desired state and  upload it to the AWS IoT shadow
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import logging
@@ -9,8 +10,7 @@ import threading
 from sense_hat import SenseHat
 
 # aws iot shadow schema
-# 
-# Name: Led
+#
 # {
 #     "state: {
 #         "desired": {
@@ -28,9 +28,9 @@ from sense_hat import SenseHat
 
 deviceShadowHandler = None
 # Initialize Sense Hat
-# ########
 sense = SenseHat()
 
+# get all values from sensors
 def getDeviceStatus():
     temp = sense.get_temperature()
     humidity = sense.get_humidity()
@@ -43,7 +43,7 @@ def getDeviceStatus():
     level_state = "no"
     if (-0.05 < x < 0.05) and (-0.05 < y < 0.05) and (0.95 < z < 1.05):
         level_state = "yes"
-    # time
+    # format the current time
     currenttime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
     return {"temperature":temp, "humidity":humidity, "level":level_state, "time":currenttime}
 
@@ -73,14 +73,6 @@ def customShadowCallback_delete(payload, responseStatus, token):
     if responseStatus == "rejected":
         print("Delete request with token " + token + " rejected!")
 
-# # Cofigure logging
-# logger = logging.getLogger("AWSIoTPythonSDK.core")
-# logger.setLevel(logging.ERROR)
-# streamHandler = logging.StreamHandler()
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# streamHandler.setFormatter(formatter)
-# logger.addHandler(streamHandler)
-
 # aws iot info
 awsiotHost = "a1eeyktzyeh5hs-ats.iot.us-east-1.amazonaws.com"
 awsiotPort = 443;
@@ -107,11 +99,11 @@ deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thing
 #Delete shadow JSON doc
 deviceShadowHandler.shadowDelete(customShadowCallback_delete, 50)
 
-#start a thread to get device status every 5 seconds
+#start a thread to get device status
 statusLoopThread = threading.Thread(target=getDeviceStatus)
 statusLoopThread.start()
 
-# Light setting
+# initialize the light and water sprinkler status
 b = [0, 0, 255]
 o = [255, 165, 0]
 w = [255,255,255]
@@ -129,11 +121,10 @@ z,z,z,z,z,z,z,z,
 ]
 sense.set_pixels(initImage)
 
-#update shadow in a loop
+#set the ideal temperature and humidity for incubation
 deisredTemp = str(35)
 desiredHum = str(60)
 print("To set desired temperature to " + deisredTemp + "and desired humidity to " + desiredHum+ "\n")
 jsonPayload = {"state":{"desired":{"temperature":deisredTemp, "humidity":desiredHum}}}
 print("payload is: " + str(jsonPayload) + "\n")
 deviceShadowHandler.shadowUpdate(json.dumps(jsonPayload), customShadowCallback_upate, 60)
-    

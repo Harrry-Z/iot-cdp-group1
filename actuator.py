@@ -1,3 +1,4 @@
+# Used to make corresponding actions to raspberry pi
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import time
 import json
@@ -49,21 +50,14 @@ def customShadowCallback_Get(payload, responseStatus, token):
         print("No reported state") 
     
     print(stateStr)
-    #  + ", Version: " + str(payloadDict["version"])
 
 # Light setting
 b = [0, 0, 255]
 o = [255, 165, 0]
 w = [255,255,255]
 z = [0, 0, 0]
-# def turnUp(image):
-#     for i in range(0, 32, 8):
-#         if image[i] == z:
-#             for j in range(8):
-#                 image[i+j] = o
-#             return image
-#     return image
 
+# create functions to control more lights on or down
 def turnUp(image):
     for i in range(0, 32):
         image[i] = o
@@ -73,7 +67,8 @@ def turnDown(image):
     for i in range(8, 32):
         image[i] = z
     return image
-    
+
+# create function to stimulate the watering
 def water(image):
     for i in range(32, 64):
         image[i] = b

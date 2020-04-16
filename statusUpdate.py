@@ -1,5 +1,5 @@
-# 文件 ledSwitch.py 充当 Led 等的操纵器，
-# 它通过调用树莓派的 GPIO 接口来设置和获取 led 灯的状态，以及将其状态上报给 IoT 服务
+# Periodically submit the state obtained by the sensors to the cloud
+# and update the shadow
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import logging
@@ -8,8 +8,7 @@ import json
 from sense_hat import SenseHat
 
 # aws iot shadow schema
-# 
-# Name: Led
+#
 # {
 #     "state: {
 #         "desired": {
@@ -27,7 +26,6 @@ from sense_hat import SenseHat
 
 
 # Initialize Sense Hat
-# ########
 sense = SenseHat()
 # fetch data from sense hat
 # get current time
@@ -36,7 +34,6 @@ currenttime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
 temp = sense.get_temperature()
 # humidity
 humidity = sense.get_humidity()
-
 temp = round(temp, 1)
 humidity = round(humidity, 1)
 
@@ -45,7 +42,6 @@ print("Moisture Level: {}".format(humidity))
 print("Temperature: {}".format(temp))
 
 #level
-# ########
 raw = sense.accel_raw
 x = raw["x"]
 y = raw["y"]
@@ -113,14 +109,6 @@ def printDeviceStatus():
     status = getDeviceStatus()
     print(" Current status: " + str(status))
     print("=========================\n\n")
-
-# # Cofigure logging
-# logger = logging.getLogger("AWSIoTPythonSDK.core")
-# logger.setLevel(logging.DEBUG)
-# streamHandler = logging.StreamHandler()
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# streamHandler.setFormatter(formatter)
-# logger.addHandler(streamHandler)
 
 # aws iot info
 awsiotHost = "a1eeyktzyeh5hs-ats.iot.us-east-1.amazonaws.com"
