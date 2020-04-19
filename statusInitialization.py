@@ -57,9 +57,8 @@ def customShadowCallback_upate(payload, responseStatus, token):
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print(payload)
         print("Update request with token: " + token + " accepted!")
-        print("Temperature: " + str(playloadDict["state"]["reported"]["temperature"]))
-        print("humidity: " + str(playloadDict["state"]["reported"]["humidity"]))
-        print("level: " + str(playloadDict["state"]["reported"]["level"]))
+        print("Temperature: " + str(playloadDict["state"]["desired"]["temperature"]))
+        print("humidity: " + str(playloadDict["state"]["desired"]["humidity"]))
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
         print("Update request " + token + " rejected!")
